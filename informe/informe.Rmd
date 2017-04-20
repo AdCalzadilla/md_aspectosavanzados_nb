@@ -1,0 +1,205 @@
+---
+title: "MINERÍA DE ASPECTOS AVANZADOS"
+author: "Adrián Calzadilla González"
+date: "19/4/2017"
+output: pdf_document
+bibliography: bibliography.bib
+fig_caption: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\tableofcontents
+\listoffigures
+\listoftables
+\newpage
+
+## Información general
+
+* Nombre y apellido: Adrián Calzadilla González 
+* Usuario kaggle: Adrián
+* Código: [https://github.com/AdCalzadilla/md_aspectosavanzados_nb](https://github.com/AdCalzadilla/md_aspectosavanzados_nb)
+
+## Introducción
+
+Práctica donde se ejecutan los conocimientos y métodos de aprendizaje vistos durante el desarrollo de la asignatura	*Minería de datos: Aspectos Avanzados*. Para ello	se	hará uso	de la	plataforma *Kaggle*, que	permite	establecer una competición de	clasificación	avanzada entre todos los alumnos.
+
+### Clasificación no balanceada
+
+Problema de carácter matemático	con	un total de 6.400	instancias, que se han dividido	al 50% entre entrenamiento y test. Este conjunto de	datos	está representado	por	un total de 22 atributos con valores numéricos y dos clases, con un ratio	de desbalanceo (*IR*) de aproximadamente 2.
+
+El objetivo	será alcanzar la máxima precisión	en términos	de la	medida *AUC*[-@lobo2008auc].
+
+## Bitácora
+
+### Viernes 24 de Marzo
+
+Primer contacto con el problema. En ese momento sólo se aceptaban dos subidas a kaggle y el fichero *csv* debía tener valores de 0 y 1.
+
+En la primera entrada, simplemente se le aplicó el algortimo *Random Forest*[-@rodriguez2006rotation] al conjunto de datos y se subió a la plataforma *kaggle* para ver el funcionamiento de la plataforma, el comportamiento del dataset sin preprocesar y un resultado que diera un punto de partida.
+
+En la segunda entrada del día se realizó preprocesamiento que consistió:
+
+* Normalización: mediante el paquete *Caret* interpolar las variables continuas en el intervalo 0, 1.
+* *SMOTE*[-@wang2006classification]: a partir de la librería *unbalanced* se ejecuta este algortimo para balancear las clases.
+
+Finalmente se le volvió a aplicar el algoritmo *Random Forest*.
+
+### Lunes 27 de Marzo
+
+Siguen habiendo dos subidas permitidas a *kaggle*. Aunque los ficheros *csv* siguen teniendo que tener los valores 0 o 1, un grupo de alumnos nos damos cuenta que subiendo probabilidades los resultados mejoran considerablemente.
+
+En la primera entrada de ese día, se le aplica al dataset *gbm* (*Gradient Boosting Machine*)[-@friedman2001greedy] para ver como responde ante este algoritmo.
+
+En la segunda, se vuelve a realizar normalización y *SMOTE*. Posteriormente se le vuelve a aplicar *gbm*.
+
+### Viernes 31 de Marzo
+
+Las entradas permitidas a *kaggle* suben a 6 y el formato del fichero *csv* tiene que tener probabilidades entre 0 y 1.
+
+En este día se realizan dos subidas: en la primera se realiza detección de *outliers*, se aplica normalización y *SMOTE* al dataset. Posteriormente se ejecuta *gbm*. El resultado es peor que los obtenidos el Lunes.
+
+En la segunda subida, se vuelve a aplicar normalización y *SMOTE*, pero no se detectan los *outliers*. A continuación, se aplica el algoritmo *gbm* y se le cambia la distribución por defecto, *bernoulli*, por *multinomial*. El resultado es peor que el realizado anteriormente.
+
+### Martes 4 de Abril
+
+En el preprocesamiento se utiliza detección de *outliers*, se normalizan los datos, se realiza selección de variables mediante el algoritmo *mrMR* y se utiliza *SMOTE* para el balanceo de datos.
+
+Posteriormete se le aplica el algorimt *svm* (*Support Vector Machines*)[-@joachims1998text].
+
+Se realizan dos entradas a *kaggle* una con cada columna de probabilidad devuelta por el algoritmo. Dan el mismo resultado.
+
+### Miércoles 5 de Abril
+
+Se realizan los siguientes pasos en el preprocesamiento:
+
+* Detección de *outliers*.
+* Normalización de los datos.
+* Selección de variables mediante *mrMr*(*max-relevance min-redundancy*)[-@peng2005feature].
+
+Una vez preprocesado el dataset, el siguiente paso es utilizar las distintas técnicas de balanceo sobre él:
+
+* Sin balanceo.
+* *Undersampling*.
+* *Oversampling*.
+* Variables sintéticas.
+
+Y se generan modelos con *Random Forest* y *svm*, los algoritmos que mejor resultado habían ofrecido, para cada uno de los dataset obtenidos con las diferentes técnicas de balanceo.
+
+Una vez ejecutado los algoritmos se realiza la entrada a *kaggle* de los dos mejores resultados obtenidos en local, *undersampling* con *svm* y *undersampling* con *Random Forest*. 
+
+Seguramente debería haber subido todos los modelos al *kaggle*.
+
+### Viernes 7 de Abril
+
+Se realizan los mismos pasos anteriores en el preprocesamiento, aunque intenta afinar más en la detección de *outliers* y en la selección de variables. También se realizan las distintas técnicas de balanceo realizadas el día anterior y se vuelven a aplicar los algoritmos *Random Forest* y *svm*.
+
+En este caso, se decide realizar la entrada a *kaggle* de cuatro modelos. Los 2 generados con *SMOTE*, uno con *undersampling* y otro sin balancear.
+
+El modelo realizado con *SMOTE* y *Random Forest* obtuvo el mejor resultado en la clasificación final.
+
+## Tabla de entradas
+
+En la *Tabla \ref{tab:punt}* se puede observar todas las entradas a *kaggle* realizadas con sus puntuaciones, algoritmos, si se ha realizado balanceo y de que tipo, y la fecha en que se realizó la subida.
+
+```{r include= FALSE}
+Fecha <- as.Date(c('2017-03-24',
+                   '2017-03-24', 
+                   '2017-03-27', 
+                   '2017-03-27', 
+                   '2017-03-31', 
+                   '2017-03-31', 
+                   '2017-04-04', 
+                   '2017-04-04', 
+                   '2017-04-04', 
+                   '2017-04-05', '2017-04-05',
+                   '2017-04-07', '2017-04-07', '2017-04-07', '2017-04-07'))
+
+Nombre <- c("result24M-imb.csv",
+            "result24M-SMOTE-imb.csv", 
+            "result27.imb.csv",
+            "result27_2.imb.csv",
+            "result_31.imb.csv", 
+            "result_31_SinOutlier.imb.csv",
+            "result_4A.svm.csv",
+            "result_5A.svm.csv (1)",
+            "result_5A.svm.csv (2)",
+            "result_5A.un.svm.csv",
+            "result_5A.un.rf.csv",
+            "result_7A.un.svm.csv",
+            "result_7A.un.svm.csv",
+            "result_7A.smote.rf.csv", 
+            "result_7A.smote.svm.csv")
+
+Balanceo <- c("Sin",
+              "SMOTE",
+              "Sin",
+              "SMOTE",
+              "SMOTE",
+              "SMOTE",
+              "SMOTE",
+              "SMOTE",
+              "SMOTE",
+              "Undersampling",
+              "Undersampling",
+              "Sin",
+              "Undersampling",
+              "SMOTE",
+              "SMOTE")
+
+Algoritmo <- c("Random Forest",
+               "Random Forest",
+               "gbm",
+               "gbm",
+               "gbm",
+               "gbm",
+               "svm",
+               "svm",
+               "svm",
+               "svm",
+               "Random Forest",
+               "svm",
+               "svm",
+               "Random Forest",
+               "svm")
+
+Puntuacion_publica <- c(0.70224, 0.70587, 0.78431, 0.79248, 0.76040, 0.75029, 
+                        0.82074, 0.82073, 0.82073, 0.76716, 0.79487, 0.80385, 0.80385, 0.81198, 0.76714)
+
+Puntuacion_privada <- c(0.67466, 0.69894, 0.79264, 0.80209, 0.77283, 0.76631,
+                        0.80672, 0.80674, 0.80674, 0.78729, 0.80600, 0.80230, 0.80230, 0.81229, 0.77013)
+entries.df <- data.frame(Fecha, Nombre, Balanceo, Algoritmo, Puntuacion_publica, Puntuacion_privada)
+
+```
+
+```{r kable, echo= FALSE}
+library(knitr)
+kable(entries.df, caption = "Tabla de resultados\\label{tab:punt}", col.names = c("Fecha", "Nombre", "Balanceo", "Algoritmo", "Punt. Pública", "Punt. Privada"))
+```
+
+## Gráfico de resultados
+
+En la *Figura \ref{fig:puntuaciones}* se puede observar las puntuaciones obtenidas tanto en la clasificación privada como en la pública respecto a la fecha de entrada en *kaggle*.
+
+```{r echo= FALSE, fig.cap="Puntuaciones obtenidas\\label{fig:puntuaciones}"}
+library(ggplot2)
+
+# Gráfica con las puntuaciones obtenidas. 
+ggplot(data = entries.df, aes(x= Fecha)) + 
+  geom_line(aes(y = Puntuacion_publica, colour = "puntuacion_pública")) + 
+  geom_line(aes(y = Puntuacion_privada, colour = "puntuacion_privada"))
+
+```
+
+## Conclusiones
+
+En esta práctica he aprendido diferentes formas de aproximación a un problema desbalanceado. Así como las librerías que permiten realizar el balanceo de datos en *r*. Además, he aprendido el funcionamiento de la herramienta *kaggle* y su importancia dentro de la ciencia de datos. También, he visto nuevas formas de preprocesamiento y he aplicado diferentes algoritmos para la generación de modelos y he analizado su comportamiento frente al dataset.
+
+\newpage
+
+## Bibliografía
+
+
+
